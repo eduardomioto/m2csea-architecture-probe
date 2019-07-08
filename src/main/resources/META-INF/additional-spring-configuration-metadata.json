@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "services.consul",
+      "type": "java.lang.String",
+      "description": "Consul Service."
+    }
+  ]
+}

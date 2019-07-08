@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: mc2pd-specialist-opinion
+---
+spring:
+ profiles: default
+ cloud:
+  consul:
+   host: 127.0.0.1
+   port: 8500
+   discovery:
+    healthCheckInterval: 15s
+ jmx:
+  enabled: false
+---
+spring:
+ profiles: dev
+ cloud:
+  consul:
+   host: 127.0.0.1
+   port: 8500
+   discovery:
+    healthCheckInterval: 15s
+ jmx:
+  enabled: false
+---
+spring:
+ profiles: hml
+ cloud:
+  consul:
+   host: 127.0.0.1
+   port: 8500
+   discovery:
+    healthCheckInterval: 15s
+ jmx:
+  enabled: false

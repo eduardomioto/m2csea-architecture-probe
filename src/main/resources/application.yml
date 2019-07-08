@@ -1,0 +1,28 @@
+ribbon:
+  ServerListRefreshInterval: 1000
+
+endpoints:
+  health:
+    sensitive: false
+  restart:
+    enabled: true
+  shutdown:
+    enabled: true
+
+management:
+  security:
+    enabled: false
+
+server:
+ port: 19090
+
+project:
+  name: mc2pd-specialist-opinion
+  version: 0.1
+  description: Specialist Opinion Project on MC2PD
+info:
+  build:
+    artifact: ${project.artifactId}
+    name: ${project.name}
+    description: ${project.description}
+    version: ${project.version}
