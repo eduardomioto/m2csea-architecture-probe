@@ -139,7 +139,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>br.com.mioto.cloud.ArchitectureProbeApp</mainClass>
+							<mainClass>br.com.mioto.cloud.ArchitectureProbe</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
