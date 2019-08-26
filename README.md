@@ -1,4 +1,4 @@
-MC2PD - Microservice Communication Critical Path Discovery - Architecture Probe Module
+M2CSEA - Architecture Probe Module
 --------------
 [![Build Status](https://travis-ci.org/eduardomioto/mc2pd-architecture-probe.svg?branch=master)](https://travis-ci.org/eduardomioto/mc2pd-architecture-probe)
 
