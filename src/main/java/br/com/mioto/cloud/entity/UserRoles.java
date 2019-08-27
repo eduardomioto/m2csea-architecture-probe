@@ -31,5 +31,26 @@ public class UserRoles implements Serializable {
     @Column(name = "id_role")
     private Long id_role;
 
+    public Long getIdUser() {
+        return idUser;
+    }
 
+    public void setIdUser(Long idUser) {
+        this.idUser = idUser;
+    }
+
+    public Long getId_role() {
+        return id_role;
+    }
+
+    public void setId_role(Long id_role) {
+        this.id_role = id_role;
+    }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
+
+
+    
 }

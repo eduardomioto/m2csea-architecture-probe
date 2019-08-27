@@ -29,4 +29,29 @@ public class UserMicroservicesWeight {
     @Column(name = "weight")
     private String weight;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getMicroservice() {
+        return microservice;
+    }
+
+    public void setMicroservice(String microservice) {
+        this.microservice = microservice;
+    }
+
+    public String getWeight() {
+        return weight;
+    }
+
+    public void setWeight(String weight) {
+        this.weight = weight;
+    }
+
+    
 }

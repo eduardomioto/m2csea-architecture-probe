@@ -29,4 +29,29 @@ public class UserVisions {
     @Column(name = "preference_order")
     private String preferenceOrder;
 
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getVisionId() {
+        return visionId;
+    }
+
+    public void setVisionId(String visionId) {
+        this.visionId = visionId;
+    }
+
+    public String getPreferenceOrder() {
+        return preferenceOrder;
+    }
+
+    public void setPreferenceOrder(String preferenceOrder) {
+        this.preferenceOrder = preferenceOrder;
+    }
+
+    
 }

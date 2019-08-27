@@ -31,4 +31,29 @@ public class Visions {
     @Column(name = "vision_desc")
     private Date visionDesc;
 
+    public Long getVisionId() {
+        return visionId;
+    }
+
+    public void setVisionId(Long visionId) {
+        this.visionId = visionId;
+    }
+
+    public String getVisionName() {
+        return visionName;
+    }
+
+    public void setVisionName(String visionName) {
+        this.visionName = visionName;
+    }
+
+    public Date getVisionDesc() {
+        return visionDesc;
+    }
+
+    public void setVisionDesc(Date visionDesc) {
+        this.visionDesc = visionDesc;
+    }
+
+    
 }
