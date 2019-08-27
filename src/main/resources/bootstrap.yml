@@ -12,6 +12,11 @@ spring:
     healthCheckInterval: 15s
  jmx:
   enabled: false
+ datasource.url: jdbc:mysql://localhost:3306/mc2pd-specialist?useSSL=false
+ datasource.username: root
+ datasource.password: admin
+ jpa.properties.hibernate.dialect: org.hibernate.dialect.MySQL5InnoDBDialect 
+
 ---
 spring:
  profiles: dev
@@ -23,6 +28,10 @@ spring:
     healthCheckInterval: 15s
  jmx:
   enabled: false
+ datasource.url: jdbc:mysql://localhost:3306/mc2pd-specialist?useSSL=false
+ datasource.username: root
+ datasource.password: admin
+ jpa.properties.hibernate.dialect: org.hibernate.dialect.MySQL5InnoDBDialect 
 ---
 spring:
  profiles: hml
@@ -34,3 +43,7 @@ spring:
     healthCheckInterval: 15s
  jmx:
   enabled: false
+ datasource.url: jdbc:mysql://localhost:3306/mc2pd-specialist?useSSL=false
+ datasource.username: root
+ datasource.password: admin
+ jpa.properties.hibernate.dialect: org.hibernate.dialect.MySQL5InnoDBDialect 
