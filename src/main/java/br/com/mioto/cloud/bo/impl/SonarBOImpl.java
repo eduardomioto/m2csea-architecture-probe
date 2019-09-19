@@ -3,6 +3,8 @@ package br.com.mioto.cloud.bo.impl;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.http.ParseException;
@@ -40,7 +42,8 @@ public class SonarBOImpl implements SonarBO {
 
         final List<SonarIssues> sonarIssues = SonarIntegration.extractInfoFromJSON(response);
 
-        final List<AgregattedSonarIssues> agregattedSonarIssues = new ArrayList<AgregattedSonarIssues>();
+
+        final HashMap<String, AgregattedSonarIssues> map = new HashMap<String, AgregattedSonarIssues>();
 
         for (final SonarIssues issue : sonarIssues) {
             final AgregattedSonarIssues aggIssue = new AgregattedSonarIssues();
@@ -48,29 +51,28 @@ public class SonarBOImpl implements SonarBO {
             aggIssue.setEfforInMinutes(issue.getEfforInMinutes());
             aggIssue.setProject(issue.getProject());
 
-            if(agregattedSonarIssues.size() > 0) {
-                for (final AgregattedSonarIssues agg : agregattedSonarIssues) {
-                    if(agg.getProject().equals(issue.getProject())){
-
-                        if(agg.getDebitInMinutes() != null) {
-                            agg.setDebitInMinutes(agg.getDebitInMinutes() + issue.getDebitInMinutes());
-                        }else {
-                            agg.setDebitInMinutes(issue.getDebitInMinutes());
-                        }
-
-                        if(agg.getEfforInMinutes() != null) {
-                            agg.setEfforInMinutes(agg.getEfforInMinutes() + issue.getEfforInMinutes());
-                        }else {
-                            agg.setEfforInMinutes(issue.getEfforInMinutes());
-                        }
-                    }
+            if(map.containsKey(issue.getProject())) {
+                final AgregattedSonarIssues agg = map.get(issue.getProject());
+                if(agg.getDebitInMinutes() != null) {
+                    agg.setDebitInMinutes(agg.getDebitInMinutes() + issue.getDebitInMinutes());
+                }else {
+                    agg.setDebitInMinutes(issue.getDebitInMinutes());
                 }
 
+                if(agg.getEfforInMinutes() != null) {
+                    agg.setEfforInMinutes(agg.getEfforInMinutes() + issue.getEfforInMinutes());
+                }else {
+                    agg.setEfforInMinutes(issue.getEfforInMinutes());
+                }
+                map.put(issue.getProject(), agg);
+            }else {
+                map.put(issue.getProject(), aggIssue);
             }
-            agregattedSonarIssues.add(aggIssue);
         }
 
-        return agregattedSonarIssues;
+        final List<AgregattedSonarIssues> agregattedSonarIssuesList = new ArrayList<AgregattedSonarIssues>(map.values());
+        Collections.sort(agregattedSonarIssuesList, Collections.reverseOrder());
+        return agregattedSonarIssuesList;
     }
 
     public static void main(String[] args) {
