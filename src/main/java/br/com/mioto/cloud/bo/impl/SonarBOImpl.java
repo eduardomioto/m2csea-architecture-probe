@@ -50,20 +50,24 @@ public class SonarBOImpl implements SonarBO {
 
             if(agregattedSonarIssues.size() > 0) {
                 for (final AgregattedSonarIssues agg : agregattedSonarIssues) {
-                    if(agg.getProject().equals(aggIssue.getProject())){
-                        agg.setDebitInMinutes(agg.getDebitInMinutes() + aggIssue.getDebitInMinutes());
+                    if(agg.getProject().equals(issue.getProject())){
+
+                        if(agg.getDebitInMinutes() != null) {
+                            agg.setDebitInMinutes(agg.getDebitInMinutes() + issue.getDebitInMinutes());
+                        }else {
+                            agg.setDebitInMinutes(issue.getDebitInMinutes());
+                        }
 
                         if(agg.getEfforInMinutes() != null) {
-                            agg.setEfforInMinutes(agg.getEfforInMinutes() + aggIssue.getEfforInMinutes());
+                            agg.setEfforInMinutes(agg.getEfforInMinutes() + issue.getEfforInMinutes());
                         }else {
-                            agg.setEfforInMinutes(aggIssue.getEfforInMinutes());
+                            agg.setEfforInMinutes(issue.getEfforInMinutes());
                         }
                     }
                 }
-            }else {
-                agregattedSonarIssues.add(aggIssue);
-            }
 
+            }
+            agregattedSonarIssues.add(aggIssue);
         }
 
         return agregattedSonarIssues;
