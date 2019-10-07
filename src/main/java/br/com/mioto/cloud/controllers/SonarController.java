@@ -25,7 +25,7 @@ public class SonarController {
     private static final Logger log = LoggerFactory.getLogger(SonarController.class);
 
     @Autowired
-    private SonarBO userVisionBO;
+    private SonarBO sonarBO;
 
     @RequestMapping(value = "/microservices/issues/", method = RequestMethod.GET)
     @ResponseBody
@@ -34,7 +34,7 @@ public class SonarController {
         List<SonarIssues> issuesList = new ArrayList<>();
 
         try {
-            issuesList = userVisionBO.getAllIssues();
+            issuesList = sonarBO.getAllIssues();
 
 
         } catch (final Exception e) {
@@ -51,7 +51,7 @@ public class SonarController {
         List<AgregattedSonarIssues> issuesList = new ArrayList<>();
 
         try {
-            issuesList = userVisionBO.getIssuesAggregatedByServices();
+            issuesList = sonarBO.getIssuesAggregatedByServices();
 
 
         } catch (final Exception e) {

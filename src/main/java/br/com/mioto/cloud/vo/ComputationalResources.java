@@ -37,6 +37,11 @@ public class ComputationalResources {
     public void setNetwork(Double network) {
         this.network = network;
     }
+    @Override
+    public String toString() {
+        return "ComputationalResources [microservice=" + microservice + ", cpu=" + cpu + ", ram=" + ram + ", io=" + io + ", network=" + network + "]";
+    }
+
 
 
 

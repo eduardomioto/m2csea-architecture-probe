@@ -1,19 +1,20 @@
 package br.com.mioto.cloud.integration;
 
-import java.text.SimpleDateFormat;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.ParseException;
 import org.json.JSONException;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import br.com.mioto.cloud.commons.HttpCommons;
 import br.com.mioto.cloud.vo.ComputationalResources;
-import br.com.mioto.cloud.vo.SonarIssues;
 
 // https://docs.docker.com/engine/api/v1.24/#31-containers
 /**
@@ -25,62 +26,81 @@ public class DockerIntegration {
     /** The Constant log. */
     private static final Logger log = LoggerFactory.getLogger(DockerIntegration.class);
 
-    /** The sdf. */
-    private final SimpleDateFormat sdf = new SimpleDateFormat();
-
     //http://localhost:2376/v1.24/containers/architecture_probe/top?ps_args=aux
     public static String treatDockerTopURL(String container){
         final StringBuilder dockerTopURL = new StringBuilder("http://localhost:2376/v1.24/containers/");
         dockerTopURL.append(container);
         dockerTopURL.append("/top?ps_args=aux");
-        log.info("sonarURL: {}", dockerTopURL);
+        log.info("dockerURL: {}", dockerTopURL);
         return dockerTopURL.toString();
     }
 
-    //
     public static String treatDockerGetContainerURL(String status){
         final StringBuilder dockerGetAllContainersURL = new StringBuilder("http://localhost:2376/v1.24/containers/json?all=0&before=8dfafdbc3a40&size=1&filters={%22status%22:[%22");
         dockerGetAllContainersURL.append(status);
-        dockerGetAllContainersURL.append("running%22]}\");");
-        log.info("sonarURL: {}", dockerGetAllContainersURL);
+        dockerGetAllContainersURL.append("%22]}");
+        log.info("dockerURL: {}", dockerGetAllContainersURL);
         return dockerGetAllContainersURL.toString();
     }
 
-    public static List<SonarIssues> extractInfoFromJSON(String response) throws ParseException, java.text.ParseException, org.json.simple.parser.ParseException, JSONException {
+    public static void main(String[] args) {
 
-        final List<SonarIssues> listInvididualDayResponse = new ArrayList<SonarIssues>();
+        try {
 
-        final JSONParser parser = new JSONParser();
-        final org.json.simple.JSONObject json = (org.json.simple.JSONObject) parser.parse(response);
+            final String microserviceListResponse = HttpCommons.callHttp(DockerIntegration.treatDockerGetContainerURL("running"), "GET");
 
-        if(json.containsKey("issues")) {
-            final JSONArray list = (JSONArray) json.get("issues");
+            final JSONParser parser = new JSONParser();
+            final org.json.simple.JSONArray json = (org.json.simple.JSONArray) parser.parse(microserviceListResponse);
 
-            for (int i = 0; i < list.size(); i++) {
+            final List<String> microserviceList = new ArrayList<String>();
+            for (int i = 0; i < json.size(); i++) {
+                final org.json.simple.JSONObject jsonObject = (JSONObject) json.get(i);
 
-                final SonarIssues sonarIssue = new SonarIssues();
-                final org.json.simple.JSONObject object = (org.json.simple.JSONObject) parser.parse(list.get(i).toString());
+                final org.json.simple.JSONArray names = (JSONArray) jsonObject.get("Names");
+                for (int j = 0; j < names.size(); j++) {
+                    final String microserviceNameRaw = (String) names.get(0);
 
-                sonarIssue.setDebt((String) object.get("debit"));
-                sonarIssue.setEffort((String) object.get("effort"));
-                sonarIssue.setMessage((String) object.get("message"));
-                sonarIssue.setProject((String) object.get("project"));
-                sonarIssue.setSeverity((String) object.get("severity"));
-                sonarIssue.setStatus((String) object.get("status"));
-                sonarIssue.setType((String) object.get("type"));
-
-                sonarIssue.setDebitInMinutes(convertToMinutes(sonarIssue.getDebt()));
-                sonarIssue.setEfforInMinutes(convertToMinutes(sonarIssue.getEffort()));
-
-                listInvididualDayResponse.add(sonarIssue);
+                    if(!getSkipList().contains(microserviceNameRaw)) {
+                        final String microserviceName = microserviceNameRaw.replace("/", "");
+                        microserviceList.add(microserviceName);
+                    }
+                }
             }
 
-        }
+            final List<ComputationalResources> computationalResourcesList = new ArrayList<ComputationalResources>();
+            for (final String microservice : microserviceList) {
+                final String response = HttpCommons.callHttp(DockerIntegration.treatDockerTopURL(microservice), "GET");
+                final List<ComputationalResources> partialList = extractInfoFromContainerJSON(response, microservice);
+                computationalResourcesList.addAll(partialList);
+            }
 
-        return listInvididualDayResponse;
+            for (final ComputationalResources computationalResources : computationalResourcesList) {
+                System.out.println(computationalResources);
+            }
+
+
+
+        } catch (ParseException | JSONException | java.text.ParseException | org.json.simple.parser.ParseException | IOException e) {
+            log.error("Error: ", e);
+        }
     }
 
-    public static List<ComputationalResources> extractInfoFromContainerJSON(String response) throws ParseException, java.text.ParseException, org.json.simple.parser.ParseException, JSONException {
+    public static List<String> getSkipList() {
+        final List<String> skipMicroservices = new ArrayList<String>();
+        skipMicroservices.add("/visualizer");
+        skipMicroservices.add("/finder");
+        skipMicroservices.add("/prometheus");
+        skipMicroservices.add("/consul");
+        skipMicroservices.add("/sonarqube");
+        skipMicroservices.add("/zipkin");
+        skipMicroservices.add("/postgres");
+        skipMicroservices.add("/neo4j");
+        skipMicroservices.add("/telegraf");
+        skipMicroservices.add("/architecture_probe");
+        return skipMicroservices;
+    }
+
+    public static List<ComputationalResources> extractInfoFromContainerJSON(String response, String microservice) throws ParseException, java.text.ParseException, org.json.simple.parser.ParseException, JSONException {
 
         final List<ComputationalResources> listInvididualDayResponse = new ArrayList<ComputationalResources>();
 
@@ -95,7 +115,6 @@ public class DockerIntegration {
 
             for (int i = 0; i < list.size(); i++) {
 
-                final ComputationalResources resourcesUsage = new ComputationalResources();
                 final JSONArray resourceEntry = (JSONArray) list.get(i);
 
                 //                "Titles": [
@@ -111,45 +130,30 @@ public class DockerIntegration {
                 //                           "TIME",
                 //                           "COMMAND"
                 //                       ]
-                final int loop = 1;
-                for (int j = 0; j < resourceEntry.size(); j++) {
-                    if(loop == 3) {
-                        cpuUsagePercentage+= (Double) resourceEntry.get(j);
+                for (int j = 0; j <= resourceEntry.size(); j++) {
+                    if(j == 2) {
+                        final String cpuStr = (String) resourceEntry.get(j);
+                        cpuUsagePercentage+= Double.valueOf(cpuStr);
                     }
-                    if(loop == 4) {
-                        memoryUsagePercentage+= (Double) resourceEntry.get(j);
+                    if(j == 3) {
+                        final String ramStr = (String) resourceEntry.get(j);
+                        memoryUsagePercentage+= Double.valueOf(ramStr);
                     }
                 }
 
-                listInvididualDayResponse.add(resourcesUsage);
             }
+            final ComputationalResources resourcesUsage = new ComputationalResources();
+            resourcesUsage.setCpu(cpuUsagePercentage);
+            //resourcesUsage.setIo(io);
+            resourcesUsage.setMicroservice(microservice);
+            //resourcesUsage.setNetwork(network);
+            resourcesUsage.setRam(memoryUsagePercentage);
+
+            listInvididualDayResponse.add(resourcesUsage);
 
         }
 
         return listInvididualDayResponse;
-    }
-
-    private static Double convertToMinutes(String sonarIssue) {
-        if(sonarIssue != null) {
-            final String base = sonarIssue.replaceAll("\\d", "");
-            final Double number = Double.valueOf(sonarIssue.replaceAll("\\D", ""));
-            Double numberInMinutes = 0.0;
-            switch (base) {
-                case "h":
-                    numberInMinutes = new Double(number * 60);
-                    break;
-                case "d":
-                    numberInMinutes = new Double(number * 60 * 24);
-                    break;
-                case "min":
-                    numberInMinutes = new Double(number);
-                    break;
-                default:
-                    break;
-            }
-            return numberInMinutes;
-        }
-        return null;
     }
 
 }
