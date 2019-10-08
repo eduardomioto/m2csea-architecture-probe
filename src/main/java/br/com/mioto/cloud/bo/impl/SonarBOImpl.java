@@ -49,24 +49,28 @@ public class SonarBOImpl implements SonarBO {
             final AgregattedSonarIssues aggIssue = new AgregattedSonarIssues();
             aggIssue.setDebitInMinutes(issue.getDebitInMinutes());
             aggIssue.setEfforInMinutes(issue.getEfforInMinutes());
-            aggIssue.setProject(issue.getProject());
 
-            if(map.containsKey(issue.getProject())) {
-                final AgregattedSonarIssues agg = map.get(issue.getProject());
-                if(agg.getDebitInMinutes() != null) {
-                    agg.setDebitInMinutes(agg.getDebitInMinutes() + issue.getDebitInMinutes());
-                }else {
-                    agg.setDebitInMinutes(issue.getDebitInMinutes());
-                }
+            if(!getSkipList().contains(issue.getProject())){
+                final String projectName = issue.getProject().replace("br.com.mioto.cloud.mc2pd:", "");
+                aggIssue.setProject(projectName);
 
-                if(agg.getEfforInMinutes() != null) {
-                    agg.setEfforInMinutes(agg.getEfforInMinutes() + issue.getEfforInMinutes());
+                if(map.containsKey(issue.getProject())) {
+                    final AgregattedSonarIssues agg = map.get(issue.getProject());
+                    if(agg.getDebitInMinutes() != null) {
+                        agg.setDebitInMinutes(agg.getDebitInMinutes() + issue.getDebitInMinutes());
+                    }else {
+                        agg.setDebitInMinutes(issue.getDebitInMinutes());
+                    }
+
+                    if(agg.getEfforInMinutes() != null) {
+                        agg.setEfforInMinutes(agg.getEfforInMinutes() + issue.getEfforInMinutes());
+                    }else {
+                        agg.setEfforInMinutes(issue.getEfforInMinutes());
+                    }
+                    map.put(issue.getProject(), agg);
                 }else {
-                    agg.setEfforInMinutes(issue.getEfforInMinutes());
+                    map.put(issue.getProject(), aggIssue);
                 }
-                map.put(issue.getProject(), agg);
-            }else {
-                map.put(issue.getProject(), aggIssue);
             }
         }
 
@@ -75,8 +79,12 @@ public class SonarBOImpl implements SonarBO {
         return agregattedSonarIssuesList;
     }
 
-    public static void main(String[] args) {
-
+    public static List<String> getSkipList() {
+        final List<String> skipMicroservices = new ArrayList<String>();
+        skipMicroservices.add("br.com.mioto.cloud:finder");
+        skipMicroservices.add("br.com.mioto.cloud:specialist-opinion");
+        skipMicroservices.add("br.com.mioto.cloud:architecture-probe");
+        return skipMicroservices;
     }
 
 }

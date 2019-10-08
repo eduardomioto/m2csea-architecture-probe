@@ -14,31 +14,31 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.mioto.cloud.bo.DockerBO;
-import br.com.mioto.cloud.vo.ComputationalResources;
+import br.com.mioto.cloud.bo.ConsulBO;
+import br.com.mioto.cloud.vo.ConsulHealthcheck;
 
 @CrossOrigin
 @RestController
-public class DockerController {
+public class ConsulController {
 
-    private static final Logger log = LoggerFactory.getLogger(DockerController.class);
+    private static final Logger log = LoggerFactory.getLogger(ConsulController.class);
 
     @Autowired
-    private DockerBO dockerBO;
+    private ConsulBO consulBO;
 
-    @RequestMapping(value = "/microservices/resourceUsage/", method = RequestMethod.GET)
+    @RequestMapping(value = "/microservices/healthchecks/", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<List<ComputationalResources>> getComputacionalResources() {
+    public ResponseEntity<List<ConsulHealthcheck>> getComputacionalResources() {
         log.info("SonarController >> getComputacionalResources");
-        List<ComputationalResources> computacionalResourceUsage = new ArrayList<>();
+        List<ConsulHealthcheck> healthchecks = new ArrayList<>();
 
         try {
-            computacionalResourceUsage = dockerBO.getAllResourceComsuption();
+            healthchecks = consulBO.getAllHealthchecks();
         } catch (final Exception e) {
             log.error("Error: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).build();
         }
-        return new ResponseEntity<List<ComputationalResources>>(computacionalResourceUsage, HttpStatus.OK);
+        return new ResponseEntity<List<ConsulHealthcheck>>(healthchecks, HttpStatus.OK);
     }
 
 
