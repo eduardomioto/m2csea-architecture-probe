@@ -54,8 +54,13 @@ public class ResponseTime implements Comparable<ResponseTime> {
 
     @Override
     public int compareTo(ResponseTime o) {
-
-        return 0;
+        if(average == o.getAverage()) {
+            return 0;
+        } else if(average > o.getAverage()) {
+            return 1;
+        } else {
+            return -1;
+        }
     }
 
 }

@@ -1,6 +1,7 @@
 package br.com.mioto.cloud.bo.impl;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -22,7 +23,12 @@ public class ResponseTimeBOImpl implements ResponseTimeBO {
 
     @Override
     public List<ResponseTime> getAllResponseTimes() throws SQLException {
-        return ResponseTimeDAO.getResponseTime();
+
+        final List<ResponseTime> responseTimeList = ResponseTimeDAO.getResponseTime();
+
+        Collections.sort(responseTimeList, Collections.reverseOrder());
+
+        return responseTimeList;
 
     }
 
