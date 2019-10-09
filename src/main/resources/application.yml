@@ -17,9 +17,9 @@ server:
  port: 19099
 
 project:
-  name: mc2pd-specialist-opinion
+  name: architecture-probe
   version: 0.1
-  description: Specialist Opinion Project on MC2PD
+  description: Architecture Probe on MC2PD
 info:
   build:
     artifact: ${project.artifactId}
