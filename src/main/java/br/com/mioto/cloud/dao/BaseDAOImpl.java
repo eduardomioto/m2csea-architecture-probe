@@ -1,4 +1,4 @@
-package br.com.mioto.cloud.dao.impl;
+package br.com.mioto.cloud.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
