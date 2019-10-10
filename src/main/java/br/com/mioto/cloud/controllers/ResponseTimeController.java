@@ -26,7 +26,7 @@ public class ResponseTimeController {
     @Autowired
     private ResponseTimeBO responseTimeBO;
 
-    @RequestMapping(value = "/microservices/responseTime/", method = RequestMethod.GET)
+    @RequestMapping(value = "/microservices/responseTime", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<List<ResponseTime>> getResponseTime() {
         log.info("ResponseTimeController >> getResponseTime");

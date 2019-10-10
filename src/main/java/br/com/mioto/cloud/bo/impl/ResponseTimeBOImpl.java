@@ -24,7 +24,18 @@ public class ResponseTimeBOImpl implements ResponseTimeBO {
     @Override
     public List<ResponseTime> getAllResponseTimes() throws SQLException {
 
-        final List<ResponseTime> responseTimeList = ResponseTimeDAO.getResponseTime();
+        final List<ResponseTime> responseTimeList = ResponseTimeDAO.getAverageTime();
+
+//        final List<ResponseTime> meanTimeList = ResponseTimeDAO.getMeanTime();
+//
+//        for (final ResponseTime responseTime : responseTimeList) {
+//
+//            for (final ResponseTime responseTime2 : meanTimeList) {
+//                if(responseTime.getProject().equals(responseTime2.getProject())) {
+//                    responseTime.setMean(responseTime2.getMean());
+//                }
+//            }
+//        }
 
         Collections.sort(responseTimeList, Collections.reverseOrder());
 

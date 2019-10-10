@@ -7,5 +7,7 @@ import br.com.mioto.cloud.vo.ResponseTime;
 
 public interface ResponseTimeDAO {
 
-    public List<ResponseTime> getResponseTime() throws SQLException;
+    public List<ResponseTime> getAverageTime() throws SQLException;
+
+    public List<ResponseTime> getMeanTime() throws SQLException;
 }
