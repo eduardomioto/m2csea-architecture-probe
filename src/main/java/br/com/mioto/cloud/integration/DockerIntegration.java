@@ -28,7 +28,7 @@ public class DockerIntegration {
 
     //http://localhost:2376/v1.24/containers/architecture_probe/top?ps_args=aux
     public static String treatDockerTopURL(String container){
-        final StringBuilder dockerTopURL = new StringBuilder("http://localhost:2376/v1.24/containers/");
+        final StringBuilder dockerTopURL = new StringBuilder("http://docker:2376/v1.24/containers/");
         dockerTopURL.append(container);
         dockerTopURL.append("/top?ps_args=aux");
         log.info("dockerURL: {}", dockerTopURL);

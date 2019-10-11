@@ -22,7 +22,7 @@ public class ConsulIntegration {
     private static final Logger log = LoggerFactory.getLogger(ConsulIntegration.class);
 
     public static String treatConsulURL(){
-        final StringBuilder consulURL = new StringBuilder("http://localhost:8500/v1/internal/ui/services?dc=dc1&token=");
+        final StringBuilder consulURL = new StringBuilder("http://consul:8500/v1/internal/ui/services?dc=dc1&token=");
         log.info("consulURL: {}", consulURL);
         return consulURL.toString();
     }

@@ -27,7 +27,7 @@ public class SonarIntegration {
     private final SimpleDateFormat sdf = new SimpleDateFormat();
 
     public static String treatSonarURL(){
-        final StringBuilder sonarURL = new StringBuilder("http://localhost:9000/api/issues/search");
+        final StringBuilder sonarURL = new StringBuilder("http://sonarqube:9000/api/issues/search");
         log.info("sonarURL: {}", sonarURL);
         return sonarURL.toString();
     }
