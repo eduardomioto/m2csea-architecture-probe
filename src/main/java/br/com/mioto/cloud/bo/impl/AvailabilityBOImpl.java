@@ -1,6 +1,7 @@
 package br.com.mioto.cloud.bo.impl;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -11,17 +12,28 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import br.com.mioto.cloud.bo.ConsulBO;
+import br.com.mioto.cloud.bo.AvailabilityBO;
+import br.com.mioto.cloud.bo.CriticalityBO;
 import br.com.mioto.cloud.commons.HttpCommons;
 import br.com.mioto.cloud.integration.ConsulIntegration;
 import br.com.mioto.cloud.vo.ConsulHealthcheck;
+import br.com.mioto.cloud.vo.CriticalityVO;
 
+/**
+ * The Class AvailabilityBOImpl.
+ */
 @Component
-public class ConsulBOImpl implements ConsulBO {
+public class AvailabilityBOImpl implements AvailabilityBO {
 
-    private static final Logger log = LoggerFactory.getLogger(ConsulBOImpl.class);
+    /** The Constant log. */
+    private static final Logger log = LoggerFactory.getLogger(AvailabilityBOImpl.class);
+
+    /** The criticality BO. */
+    @Autowired
+    private CriticalityBO criticalityBO;
 
     /**
      * Gets the all resource comsuption.
@@ -32,9 +44,10 @@ public class ConsulBOImpl implements ConsulBO {
      * @throws ParseException the parse exception
      * @throws ParseException the parse exception
      * @throws JSONException the JSON exception
+     * @throws SQLException the SQL exception
      */
     @Override
-    public List<ConsulHealthcheck> getAllHealthchecks() throws IOException, ParseException, org.apache.http.ParseException, JSONException, java.text.ParseException {
+    public List<ConsulHealthcheck> getAllHealthchecks() throws IOException, ParseException, org.apache.http.ParseException, JSONException, java.text.ParseException, SQLException {
 
         final List<ConsulHealthcheck> healthcheckList = new ArrayList<ConsulHealthcheck>();
 
@@ -68,9 +81,55 @@ public class ConsulBOImpl implements ConsulBO {
 
         Collections.sort(healthcheckList, Collections.reverseOrder());
 
+        if(healthcheckList.size() > 0) {
+            final ConsulHealthcheck healthcheck = healthcheckList.get(0);
+            checkCriticality(healthcheck);
+        }
+
         return healthcheckList;
     }
 
 
+
+    /**
+     * Check criticality.
+     *
+     * @param healthcheck the healthcheck
+     * @throws SQLException the SQL exception
+     */
+    private void checkCriticality(final ConsulHealthcheck healthcheck) throws SQLException {
+
+        final long critical = healthcheck.getChecksCritical();
+        healthcheck.getChecksPassing();
+        healthcheck.getChecksWarning();
+
+        final Integer criticalityFactor = this.calculateCriticalityFactor( critical);
+        final CriticalityVO vo = criticalityBO.populate(healthcheck.getName(), criticalityFactor, String.valueOf(critical), "availability");
+        criticalityBO.saveCriticality(vo);
+    }
+
+    /**
+     * Calculate criticality factor.
+     *
+     * @param value the value
+     * @return the integer
+     */
+    public Integer calculateCriticalityFactor(long value) {
+
+        if((value > 0) && (value <= 1)) {
+            return 1;
+
+        }else if((value > 1) && (value <= 2)) {
+            return 2;
+
+        }else if((value > 2) && (value <= 3)) {
+            return 3;
+
+        }else if((value > 3) && (value <= 4)) {
+            return 4;
+        }
+
+        return 5;
+    }
 
 }

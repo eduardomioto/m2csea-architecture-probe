@@ -9,7 +9,7 @@ import org.json.JSONException;
 
 import br.com.mioto.cloud.vo.ConsulHealthcheck;
 
-public interface ConsulBO {
+public interface AvailabilityBO {
 
     /**
      * Gets the all healthchecks.

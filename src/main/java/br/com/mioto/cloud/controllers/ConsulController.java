@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.mioto.cloud.bo.ConsulBO;
+import br.com.mioto.cloud.bo.AvailabilityBO;
 import br.com.mioto.cloud.vo.ConsulHealthcheck;
 
 @CrossOrigin
@@ -24,7 +24,7 @@ public class ConsulController {
     private static final Logger log = LoggerFactory.getLogger(ConsulController.class);
 
     @Autowired
-    private ConsulBO consulBO;
+    private AvailabilityBO consulBO;
 
     @RequestMapping(value = "/microservices/healthchecks/", method = RequestMethod.GET)
     @ResponseBody
