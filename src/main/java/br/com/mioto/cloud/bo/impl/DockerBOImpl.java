@@ -108,6 +108,7 @@ public class DockerBOImpl implements DockerBO {
 
         final String value = "CPU: " + criticalityFactorCPU + " | RAM: " + criticalityFactorRAM;
         final CriticalityVO vo = criticalityBO.populate(computationalResources.getMicroservice(), criticalityFactor, value, "computational-resource-usage");
+        log.info("Criticality: {}", vo);
         criticalityBO.saveCriticality(vo);
     }
 

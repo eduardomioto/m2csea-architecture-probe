@@ -105,6 +105,7 @@ public class AvailabilityBOImpl implements AvailabilityBO {
 
         final Integer criticalityFactor = this.calculateCriticalityFactor( critical);
         final CriticalityVO vo = criticalityBO.populate(healthcheck.getName(), criticalityFactor, String.valueOf(critical), "availability");
+        log.info("Criticality: {}", vo);
         criticalityBO.saveCriticality(vo);
     }
 

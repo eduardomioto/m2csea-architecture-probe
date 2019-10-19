@@ -31,8 +31,12 @@ public class CriticalityBOImpl implements CriticalityBO {
      * @throws SQLException the SQL exception
      */
     @Override
-    public void saveCriticality(CriticalityVO vo) throws SQLException {
-        criticalityDAO.saveCriticality(vo);
+    public void saveCriticality(CriticalityVO vo) {
+        try {
+            criticalityDAO.saveCriticality(vo);
+        } catch (final Exception e) {
+            log.error("Error saving criticality. Error: ", e);
+        }
     }
 
 

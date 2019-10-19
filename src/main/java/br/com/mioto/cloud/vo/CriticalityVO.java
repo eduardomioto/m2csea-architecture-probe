@@ -31,6 +31,10 @@ public class CriticalityVO {
     public void setValue(String value) {
         this.value = value;
     }
+    @Override
+    public String toString() {
+        return "CriticalityVO [microservice=" + microservice + ", vision=" + vision + ", criticalityFactor=" + criticalityFactor + ", value=" + value + "]";
+    }
 
 
 

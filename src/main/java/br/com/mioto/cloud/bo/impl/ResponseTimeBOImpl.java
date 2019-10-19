@@ -77,6 +77,7 @@ public class ResponseTimeBOImpl implements ResponseTimeBO {
     private void checkCriticality(final ResponseTime responseTime) throws SQLException {
         final Integer criticalityFactor = this.calculateCriticalityFactor(responseTime.getAverage());
         final CriticalityVO vo = criticalityBO.populate(responseTime.getProject(), criticalityFactor, responseTime.getAverage().toString(), "response-time");
+        log.info("Criticality: {}", vo);
         criticalityBO.saveCriticality(vo);
     }
 

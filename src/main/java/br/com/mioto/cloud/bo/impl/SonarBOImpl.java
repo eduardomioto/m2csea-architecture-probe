@@ -141,6 +141,7 @@ public class SonarBOImpl implements SonarBO {
         final Double effort = aregattedSonarIssues.getEfforInMinutes();
         final Integer criticalityFactor = this.calculateCriticalityFactor(effort);
         final CriticalityVO vo = criticalityBO.populate(aregattedSonarIssues.getProject(), criticalityFactor, effort.toString(), "tech-debit");
+        log.info("Criticality: {}", vo);
         criticalityBO.saveCriticality(vo);
     }
 
