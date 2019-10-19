@@ -6,7 +6,6 @@ import java.sql.SQLException;
 
 import org.springframework.stereotype.Component;
 
-import br.com.mioto.cloud.dao.BaseDAOImpl;
 import br.com.mioto.cloud.dao.CriticalityDAO;
 import br.com.mioto.cloud.vo.CriticalityVO;
 

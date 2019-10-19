@@ -28,7 +28,7 @@ public class DockerIntegration {
 
     //http://localhost:2376/v1.24/containers/architecture_probe/top?ps_args=aux
     public static String treatDockerTopURL(String container){
-        final StringBuilder dockerTopURL = new StringBuilder("http://docker:2376/v1.24/containers/");
+        final StringBuilder dockerTopURL = new StringBuilder("http://docker-stats:2376/v1.24/containers/");
         dockerTopURL.append(container);
         dockerTopURL.append("/top?ps_args=aux");
         log.info("dockerURL: {}", dockerTopURL);
@@ -36,7 +36,7 @@ public class DockerIntegration {
     }
 
     public static String treatDockerGetContainerURL(String status){
-        final StringBuilder dockerGetAllContainersURL = new StringBuilder("http://localhost:2376/v1.24/containers/json?all=0&before=8dfafdbc3a40&size=1&filters={%22status%22:[%22");
+        final StringBuilder dockerGetAllContainersURL = new StringBuilder("http://docker-stats:2376/v1.24/containers/json?all=0&before=8dfafdbc3a40&size=1&filters={%22status%22:[%22");
         dockerGetAllContainersURL.append(status);
         dockerGetAllContainersURL.append("%22]}");
         log.info("dockerURL: {}", dockerGetAllContainersURL);
@@ -97,6 +97,7 @@ public class DockerIntegration {
         skipMicroservices.add("/neo4j");
         skipMicroservices.add("/telegraf");
         skipMicroservices.add("/architecture_probe");
+        skipMicroservices.add("/mysql");
         return skipMicroservices;
     }
 

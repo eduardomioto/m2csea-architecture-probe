@@ -14,9 +14,6 @@ import org.springframework.stereotype.Component;
 
 import br.com.mioto.cloud.vo.SonarIssues;
 
-/**
- * The Class OpenWeatherMapIntegration.
- */
 @Component
 public class SonarIntegration {
 

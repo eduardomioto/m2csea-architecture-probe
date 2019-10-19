@@ -1,8 +1,11 @@
 package br.com.mioto.cloud.bo.impl;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +44,18 @@ public class ResponseTimeBOImpl implements ResponseTimeBO {
     @Override
     public List<ResponseTime> getAllResponseTimes() throws SQLException {
 
-        final List<ResponseTime> responseTimeList = responseTimeDAO.getAverageTime();
+        final List<ResponseTime> responseTimeList = new ArrayList<ResponseTime>();
+        final Map<String, Double> responseTimeMap = responseTimeDAO.getAverageTime("1");
+        final Map<String, Double> responseTimeMapSevenDays = responseTimeDAO.getAverageTime("7");
+        final Map<String, Double> responseTimeMap30Days = responseTimeDAO.getAverageTime("30");
+
+        for (final Entry<String, Double> entry : responseTimeMap.entrySet()) {
+            final ResponseTime responseTime = new ResponseTime();
+            responseTime.setAverage(responseTimeMap.get(entry.getKey()));
+            responseTime.setAverageLastSevenDays(responseTimeMapSevenDays.get(entry.getKey()));
+            responseTime.setAverageLastThirtyDays(responseTimeMap30Days.get(entry.getKey()));
+            responseTimeList.add(responseTime);
+        }
 
         Collections.sort(responseTimeList, Collections.reverseOrder());
 

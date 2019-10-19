@@ -4,13 +4,11 @@ public class ResponseTime implements Comparable<ResponseTime> {
 
     private String project;
 
-    private Double mean;
-
     private Double average;
 
-    private Double meanLastSevenDays;
-
     private Double averageLastSevenDays;
+
+    private Double averageLastThirtyDays;
 
     public String getProject() {
         return project;
@@ -18,14 +16,6 @@ public class ResponseTime implements Comparable<ResponseTime> {
 
     public void setProject(String project) {
         this.project = project;
-    }
-
-    public Double getMean() {
-        return mean;
-    }
-
-    public void setMean(Double mean) {
-        this.mean = mean;
     }
 
     public Double getAverage() {
@@ -36,12 +26,12 @@ public class ResponseTime implements Comparable<ResponseTime> {
         this.average = average;
     }
 
-    public Double getMeanLastSevenDays() {
-        return meanLastSevenDays;
+    public Double getAverageLastThirtyDays() {
+        return averageLastThirtyDays;
     }
 
-    public void setMeanLastSevenDays(Double meanLastSevenDays) {
-        this.meanLastSevenDays = meanLastSevenDays;
+    public void setAverageLastThirtyDays(Double averageLastThirtyDays) {
+        this.averageLastThirtyDays = averageLastThirtyDays;
     }
 
     public Double getAverageLastSevenDays() {
