@@ -54,6 +54,7 @@ public class ResponseTimeBOImpl implements ResponseTimeBO {
             responseTime.setAverage(responseTimeMap.get(entry.getKey()));
             responseTime.setAverageLastSevenDays(responseTimeMapSevenDays.get(entry.getKey()));
             responseTime.setAverageLastThirtyDays(responseTimeMap30Days.get(entry.getKey()));
+            responseTime.setProject(entry.getKey());
             responseTimeList.add(responseTime);
         }
 
