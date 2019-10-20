@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import br.com.mioto.cloud.bo.AvailabilityBO;
 import br.com.mioto.cloud.bo.CriticalityBO;
 import br.com.mioto.cloud.commons.HttpCommons;
+import br.com.mioto.cloud.commons.ProbeUtils;
 import br.com.mioto.cloud.dao.AvailabilityDAO;
 import br.com.mioto.cloud.integration.ConsulIntegration;
 import br.com.mioto.cloud.vo.ConsulHealthcheck;
@@ -91,11 +92,18 @@ public class AvailabilityBOImpl implements AvailabilityBO {
 
             final String status =  (String) jsonObject.get("Status");
 
-            final ConsulStatus consulHealthcheck = new ConsulStatus();
-            consulHealthcheck.setName(name);
-            consulHealthcheck.setStatus(status);
+            final List<String> skipList = new ArrayList<String>();
+            skipList.add("Serf Health Status");
+            skipList.add("mc2pd-finder");
 
-            availabilityDAO.saveAvailabilityStatus(name, status);
+            if(!skipList.contains(name)) {
+                final ConsulStatus consulHealthcheck = new ConsulStatus();
+                consulHealthcheck.setName(name);
+                consulHealthcheck.setStatus(status);
+
+                final String microservice = ProbeUtils.normalizeMicroserviceName(name);
+                availabilityDAO.saveAvailabilityStatus(microservice, status);
+            }
         }
     }
 

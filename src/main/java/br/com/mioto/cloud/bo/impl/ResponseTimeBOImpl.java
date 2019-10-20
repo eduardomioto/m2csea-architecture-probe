@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import br.com.mioto.cloud.bo.CriticalityBO;
 import br.com.mioto.cloud.bo.ResponseTimeBO;
+import br.com.mioto.cloud.commons.ProbeUtils;
 import br.com.mioto.cloud.dao.ResponseTimeDAO;
 import br.com.mioto.cloud.vo.CriticalityVO;
 import br.com.mioto.cloud.vo.ResponseTime;
@@ -77,7 +78,9 @@ public class ResponseTimeBOImpl implements ResponseTimeBO {
      */
     private void checkCriticality(final ResponseTime responseTime) throws SQLException {
         final Integer criticalityFactor = this.calculateCriticalityFactor(responseTime.getAverage());
-        final CriticalityVO vo = criticalityBO.populate(responseTime.getProject(), criticalityFactor, responseTime.getAverage().toString(), "response-time");
+
+        final String microservice = ProbeUtils.normalizeMicroserviceName(responseTime.getProject());
+        final CriticalityVO vo = criticalityBO.populate(microservice, criticalityFactor, responseTime.getAverage().toString(), "response-time");
         log.info("Criticality: {}", vo);
         criticalityBO.saveCriticality(vo);
     }

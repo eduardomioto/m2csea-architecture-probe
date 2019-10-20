@@ -17,10 +17,13 @@ import org.springframework.stereotype.Component;
 import br.com.mioto.cloud.bo.CriticalityBO;
 import br.com.mioto.cloud.bo.SonarBO;
 import br.com.mioto.cloud.commons.HttpCommons;
+import br.com.mioto.cloud.commons.ProbeUtils;
+import br.com.mioto.cloud.dao.CoverageDAO;
 import br.com.mioto.cloud.integration.SonarIntegration;
 import br.com.mioto.cloud.vo.AgregattedSonarIssues;
 import br.com.mioto.cloud.vo.CriticalityVO;
 import br.com.mioto.cloud.vo.SonarIssues;
+import br.com.mioto.cloud.vo.UnitTestCoverage;
 
 /**
  * The Class SonarBOImpl.
@@ -34,6 +37,9 @@ public class SonarBOImpl implements SonarBO {
     /** The criticality BO. */
     @Autowired
     private CriticalityBO criticalityBO;
+
+    @Autowired
+    private CoverageDAO coverageDAO;
 
     /**
      * Gets the all issues.
@@ -140,7 +146,9 @@ public class SonarBOImpl implements SonarBO {
 
         final Double effort = aregattedSonarIssues.getEfforInMinutes();
         final Integer criticalityFactor = this.calculateCriticalityFactor(effort);
-        final CriticalityVO vo = criticalityBO.populate(aregattedSonarIssues.getProject(), criticalityFactor, effort.toString(), "tech-debit");
+
+        final String microservice = ProbeUtils.normalizeMicroserviceName(aregattedSonarIssues.getProject());
+        final CriticalityVO vo = criticalityBO.populate(microservice, criticalityFactor, effort.toString(), "tech-debit");
         log.info("Criticality: {}", vo);
         criticalityBO.saveCriticality(vo);
     }
@@ -167,5 +175,59 @@ public class SonarBOImpl implements SonarBO {
         }
 
         return 5;
+    }
+
+    @Override
+    public List<UnitTestCoverage> getUnitTestCoverage() throws SQLException {
+
+        final List<UnitTestCoverage> list =  coverageDAO.getUnitTestCoverage();
+        Collections.sort(list);
+
+        if(list.size() > 0) {
+            final UnitTestCoverage issue = list.get(0);
+            checkCriticalityUnitTestCoverage(issue);
+        }
+
+        return list;
+    }
+
+    /**
+     * Check criticality.
+     *
+     * @param aregattedSonarIssues the aregatted sonar issues
+     * @throws SQLException the SQL exception
+     */
+    private void checkCriticalityUnitTestCoverage(final UnitTestCoverage unitTestCoverage) throws SQLException {
+
+        final Double effort = unitTestCoverage.getCoverage();
+        final Integer criticalityFactor = this.calculateCriticalityFactorUnitTestCoverage(effort);
+
+        final String microservice = ProbeUtils.normalizeMicroserviceName(unitTestCoverage.getMicroservice());
+        final CriticalityVO vo = criticalityBO.populate(microservice, criticalityFactor, effort.toString(), "unit-test-coverage");
+        log.info("Criticality: {}", vo);
+        criticalityBO.saveCriticality(vo);
+    }
+
+    /**
+     * Calculate criticality factor.
+     *
+     * @param value the value
+     * @return the integer
+     */
+    public Integer calculateCriticalityFactorUnitTestCoverage(Double value) {
+
+        if((value > 0) && (value <= 20)) {
+            return 5;
+
+        }else if((value > 20) && (value <= 40)) {
+            return 4;
+
+        }else if((value > 40) && (value <= 60)) {
+            return 3;
+
+        }else if((value > 60) && (value <= 80)) {
+            return 2;
+        }
+        return 1;
     }
 }

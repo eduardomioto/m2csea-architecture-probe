@@ -9,6 +9,7 @@ import org.json.JSONException;
 
 import br.com.mioto.cloud.vo.AgregattedSonarIssues;
 import br.com.mioto.cloud.vo.SonarIssues;
+import br.com.mioto.cloud.vo.UnitTestCoverage;
 
 public interface SonarBO {
 
@@ -38,5 +39,13 @@ public interface SonarBO {
      */
     public List<AgregattedSonarIssues> getIssuesAggregatedByServices()
             throws SQLException, IOException, ParseException, java.text.ParseException, org.json.simple.parser.ParseException, JSONException;
+
+    /**
+     * Gets the unit test coverage.
+     *
+     * @return the unit test coverage
+     * @throws SQLException
+     */
+    public List<UnitTestCoverage> getUnitTestCoverage() throws SQLException;
 
 }

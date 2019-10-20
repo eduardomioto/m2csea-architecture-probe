@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.mioto.cloud.bo.SonarBO;
 import br.com.mioto.cloud.vo.AgregattedSonarIssues;
 import br.com.mioto.cloud.vo.SonarIssues;
+import br.com.mioto.cloud.vo.UnitTestCoverage;
 
 @CrossOrigin
 @RestController
@@ -59,5 +60,22 @@ public class SonarController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).build();
         }
         return new ResponseEntity<List<AgregattedSonarIssues>>(issuesList, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/microservices/unitTestCoverage/", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<List<UnitTestCoverage>> getUnitTestCoverage() {
+        log.info("SonarController >> getUnitTestCoverage");
+        List<UnitTestCoverage> issuesList = new ArrayList<>();
+
+        try {
+            issuesList = sonarBO.getUnitTestCoverage();
+
+
+        } catch (final Exception e) {
+            log.error("Error: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).build();
+        }
+        return new ResponseEntity<List<UnitTestCoverage>>(issuesList, HttpStatus.OK);
     }
 }

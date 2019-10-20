@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import br.com.mioto.cloud.bo.CriticalityBO;
 import br.com.mioto.cloud.bo.DockerBO;
 import br.com.mioto.cloud.commons.HttpCommons;
+import br.com.mioto.cloud.commons.ProbeUtils;
 import br.com.mioto.cloud.integration.DockerIntegration;
 import br.com.mioto.cloud.vo.ComputationalResources;
 import br.com.mioto.cloud.vo.CriticalityVO;
@@ -109,11 +110,16 @@ public class DockerBOImpl implements DockerBO {
             criticalityFactor = criticalityFactorRAM;
         }
 
+        final String microservice = ProbeUtils.normalizeMicroserviceName(computationalResources.getMicroservice());
+
         final String value = "CPU: " + criticalityFactorCPU + " | RAM: " + criticalityFactorRAM;
-        final CriticalityVO vo = criticalityBO.populate(computationalResources.getMicroservice(), criticalityFactor, value, "computational-resource-usage");
+        final CriticalityVO vo = criticalityBO.populate(microservice, criticalityFactor, value, "computational-resource-usage");
         log.info("Criticality: {}", vo);
         criticalityBO.saveCriticality(vo);
     }
+
+
+
 
     /**
      * Calculate criticality factor.
