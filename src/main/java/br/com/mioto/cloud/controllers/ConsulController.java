@@ -9,13 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.mioto.cloud.bo.AvailabilityBO;
-import br.com.mioto.cloud.vo.ConsulHealthcheck;
+import br.com.mioto.cloud.vo.ConsulStatus;
 
 @CrossOrigin
 @RestController
@@ -26,19 +27,19 @@ public class ConsulController {
     @Autowired
     private AvailabilityBO consulBO;
 
-    @RequestMapping(value = "/microservices/healthchecks/", method = RequestMethod.GET)
+    @RequestMapping(value = "/microservices/healthchecks/days/{days}", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<List<ConsulHealthcheck>> getComputacionalResources() {
-        log.info("SonarController >> getComputacionalResources");
-        List<ConsulHealthcheck> healthchecks = new ArrayList<>();
+    public ResponseEntity<List<ConsulStatus>> getHealthchecks(@PathVariable("days") String days) {
+        log.info("ConsulController >> getHealthchecks");
+        List<ConsulStatus> healthchecks = new ArrayList<>();
 
         try {
-            healthchecks = consulBO.getAllHealthchecks();
+            healthchecks = consulBO.getAllHealthchecks(days);
         } catch (final Exception e) {
             log.error("Error: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).build();
         }
-        return new ResponseEntity<List<ConsulHealthcheck>>(healthchecks, HttpStatus.OK);
+        return new ResponseEntity<List<ConsulStatus>>(healthchecks, HttpStatus.OK);
     }
 
 

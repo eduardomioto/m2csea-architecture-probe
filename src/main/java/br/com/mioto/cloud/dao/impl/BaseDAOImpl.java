@@ -8,7 +8,7 @@ public class BaseDAOImpl {
 
     public Connection getConnection() throws SQLException {
         return DriverManager.getConnection(
-                "jdbc:mysql://mysql:3306/m2csea-metrics?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC",
+                "jdbc:mysql://localhost:3306/m2csea-metrics?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC",
                 "root", "admin");
     }
 }

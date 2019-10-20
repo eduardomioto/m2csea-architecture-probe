@@ -1,6 +1,6 @@
 package br.com.mioto.cloud.vo;
 
-public class ComputationalResources {
+public class ComputationalResources implements Comparable<ComputationalResources> {
 
     private String microservice;
     private Double cpu;
@@ -42,7 +42,16 @@ public class ComputationalResources {
         return "ComputationalResources [microservice=" + microservice + ", cpu=" + cpu + ", ram=" + ram + ", io=" + io + ", network=" + network + "]";
     }
 
+    @Override
+    public int compareTo(ComputationalResources o) {
 
-
+        if((cpu + ram) == (o.getCpu() + o.getRam())) {
+            return 0;
+        } else if((cpu + ram) > (o.getCpu() + o.getRam())) {
+            return 1;
+        } else {
+            return -1;
+        }
+    }
 
 }

@@ -13,28 +13,27 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import br.com.mioto.cloud.commons.HttpCommons;
-import br.com.mioto.cloud.vo.ConsulStatus;
+import br.com.mioto.cloud.vo.ConsulHealthcheck;
 
 @Component
-public class ConsulIntegration {
+public class ConsulIntegrationIntegrationCheks {
 
     /** The Constant log. */
-    private static final Logger log = LoggerFactory.getLogger(ConsulIntegration.class);
+    private static final Logger log = LoggerFactory.getLogger(ConsulIntegrationIntegrationCheks.class);
 
-    public static String treatConsulURL(String status){
-        final StringBuilder consulURL =  new StringBuilder("http://localhost:8500/v1/health/state/" + status);
+    public static String treatConsulURL(){
+        final StringBuilder consulURL = new StringBuilder("http://localhost:8500/v1/internal/ui/services?dc=dc1&token=");
         log.info("consulURL: {}", consulURL);
         return consulURL.toString();
     }
-
 
     public static void main(String[] args) {
 
         try {
 
-            final List<ConsulStatus> statusList = new ArrayList<ConsulStatus>();
+            final List<ConsulHealthcheck> computationalResourcesList = new ArrayList<ConsulHealthcheck>();
 
-            final String microserviceListResponse = HttpCommons.callHttp(ConsulIntegration.treatConsulURL("passing"),"GET");
+            final String microserviceListResponse = HttpCommons.callHttp(ConsulIntegrationIntegrationCheks.treatConsulURL(),"GET");
 
             final JSONParser parser = new JSONParser();
             final org.json.simple.JSONArray json = (org.json.simple.JSONArray) parser.parse(microserviceListResponse);
@@ -42,20 +41,20 @@ public class ConsulIntegration {
             for (int i = 0; i < json.size(); i++) {
                 final org.json.simple.JSONObject jsonObject = (JSONObject) json.get(i);
 
-                String name = (String) jsonObject.get("Name");
-                name = name.replace("Service '", "");
-                name = name.replace("' check", "");
+                final String name = (String) jsonObject.get("Name");
+                final Long checksPassing =  (Long) jsonObject.get("ChecksPassing");
+                final Long checksWarning =   (Long) jsonObject.get("ChecksWarning");
+                final Long checksCritical =   (Long) jsonObject.get("ChecksCritical");
 
-                final String status =  (String) jsonObject.get("Status");
-
-                final ConsulStatus consulHealthcheck = new ConsulStatus();
+                final ConsulHealthcheck consulHealthcheck = new ConsulHealthcheck();
+                consulHealthcheck.setChecksCritical(checksCritical);
+                consulHealthcheck.setChecksPassing(checksPassing);
+                consulHealthcheck.setChecksWarning(checksWarning);
                 consulHealthcheck.setName(name);
-                consulHealthcheck.setStatus(status);
-
-                statusList.add(consulHealthcheck);
+                computationalResourcesList.add(consulHealthcheck);
             }
 
-            for (final ConsulStatus computationalResources : statusList) {
+            for (final ConsulHealthcheck computationalResources : computationalResourcesList) {
                 log.info(computationalResources.toString());
             }
 

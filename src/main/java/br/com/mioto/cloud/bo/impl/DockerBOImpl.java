@@ -3,6 +3,7 @@ package br.com.mioto.cloud.bo.impl;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.json.JSONException;
@@ -76,12 +77,14 @@ public class DockerBOImpl implements DockerBO {
             final List<ComputationalResources> partialList = DockerIntegration.extractInfoFromContainerJSON(response, microservice);
             computationalResourcesList.addAll(partialList);
         }
+        Collections.sort(computationalResourcesList, Collections.reverseOrder());
 
         if(computationalResourcesList.size() > 0) {
             final ComputationalResources computationalResources = computationalResourcesList.get(0);
             checkCriticality(computationalResources);
 
         }
+
 
         return computationalResourcesList;
     }

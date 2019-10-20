@@ -18,8 +18,10 @@ import org.springframework.stereotype.Component;
 import br.com.mioto.cloud.bo.AvailabilityBO;
 import br.com.mioto.cloud.bo.CriticalityBO;
 import br.com.mioto.cloud.commons.HttpCommons;
+import br.com.mioto.cloud.dao.AvailabilityDAO;
 import br.com.mioto.cloud.integration.ConsulIntegration;
 import br.com.mioto.cloud.vo.ConsulHealthcheck;
+import br.com.mioto.cloud.vo.ConsulStatus;
 import br.com.mioto.cloud.vo.CriticalityVO;
 
 /**
@@ -35,6 +37,9 @@ public class AvailabilityBOImpl implements AvailabilityBO {
     @Autowired
     private CriticalityBO criticalityBO;
 
+    @Autowired
+    private AvailabilityDAO availabilityDAO;
+
     /**
      * Gets the all resource comsuption.
      *
@@ -47,11 +52,59 @@ public class AvailabilityBOImpl implements AvailabilityBO {
      * @throws SQLException the SQL exception
      */
     @Override
-    public List<ConsulHealthcheck> getAllHealthchecks() throws IOException, ParseException, org.apache.http.ParseException, JSONException, java.text.ParseException, SQLException {
+    public List<ConsulStatus> getAllHealthchecks(String days) throws IOException, ParseException, org.apache.http.ParseException, JSONException, java.text.ParseException, SQLException {
+
+        final String microserviceListResponsePassing = HttpCommons.callHttp(ConsulIntegration.treatConsulURL("passing"),"GET");
+        extracted(microserviceListResponsePassing);
+
+        final String microserviceListResponseCritical = HttpCommons.callHttp(ConsulIntegration.treatConsulURL("critical"),"GET");
+        extracted(microserviceListResponseCritical);
+
+        final List<ConsulStatus> statusList = availabilityDAO.getAvailability(days);
+
+
+        for (final ConsulStatus healthcheck : statusList) {
+            log.info(healthcheck.toString());
+        }
+
+        Collections.sort(statusList, Collections.reverseOrder());
+
+        if(statusList.size() > 0) {
+            final ConsulStatus healthcheck = statusList.get(0);
+            checkCriticality(healthcheck);
+        }
+
+        return statusList;
+    }
+
+
+    private void extracted(final String microserviceListResponse) throws ParseException, SQLException {
+        final JSONParser parser = new JSONParser();
+        final org.json.simple.JSONArray json = (org.json.simple.JSONArray) parser.parse(microserviceListResponse);
+
+        for (int i = 0; i < json.size(); i++) {
+            final org.json.simple.JSONObject jsonObject = (JSONObject) json.get(i);
+
+            String name = (String) jsonObject.get("Name");
+            name = name.replace("Service '", "");
+            name = name.replace("' check", "");
+
+            final String status =  (String) jsonObject.get("Status");
+
+            final ConsulStatus consulHealthcheck = new ConsulStatus();
+            consulHealthcheck.setName(name);
+            consulHealthcheck.setStatus(status);
+
+            availabilityDAO.saveAvailabilityStatus(name, status);
+        }
+    }
+
+
+    public List<ConsulHealthcheck> getAllCriticalHealthchecks() throws IOException, ParseException, org.apache.http.ParseException, JSONException, java.text.ParseException, SQLException {
 
         final List<ConsulHealthcheck> healthcheckList = new ArrayList<ConsulHealthcheck>();
 
-        final String microserviceListResponse = HttpCommons.callHttp(ConsulIntegration.treatConsulURL(),"GET");
+        final String microserviceListResponse = HttpCommons.callHttp(ConsulIntegration.treatConsulURL("passing"),"GET");
 
         final JSONParser parser = new JSONParser();
         final org.json.simple.JSONArray json = (org.json.simple.JSONArray) parser.parse(microserviceListResponse);
@@ -81,11 +134,6 @@ public class AvailabilityBOImpl implements AvailabilityBO {
 
         Collections.sort(healthcheckList, Collections.reverseOrder());
 
-        if(healthcheckList.size() > 0) {
-            final ConsulHealthcheck healthcheck = healthcheckList.get(0);
-            checkCriticality(healthcheck);
-        }
-
         return healthcheckList;
     }
 
@@ -97,11 +145,9 @@ public class AvailabilityBOImpl implements AvailabilityBO {
      * @param healthcheck the healthcheck
      * @throws SQLException the SQL exception
      */
-    private void checkCriticality(final ConsulHealthcheck healthcheck) throws SQLException {
+    private void checkCriticality(final ConsulStatus healthcheck) throws SQLException {
 
-        final long critical = healthcheck.getChecksCritical();
-        healthcheck.getChecksPassing();
-        healthcheck.getChecksWarning();
+        final long critical = healthcheck.getDowntimeOccurrences();
 
         final Integer criticalityFactor = this.calculateCriticalityFactor( critical);
         final CriticalityVO vo = criticalityBO.populate(healthcheck.getName(), criticalityFactor, String.valueOf(critical), "availability");

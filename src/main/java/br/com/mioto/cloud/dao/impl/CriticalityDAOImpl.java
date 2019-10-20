@@ -13,6 +13,23 @@ import br.com.mioto.cloud.vo.CriticalityVO;
 public class CriticalityDAOImpl extends BaseDAOImpl implements CriticalityDAO  {
 
     @Override
+    public void saveAvailabilityStatus(String microservice, String status) throws SQLException {
+
+        final Connection conn =  getConnection();
+        final String query = "INSERT INTO availability (microservice, status, dt_transaction) VALUES(?, ?, NOW())";
+
+        final PreparedStatement preparedStmt = conn.prepareStatement(query);
+        preparedStmt.setString (1, microservice);
+        preparedStmt.setString (2, status);
+
+        preparedStmt.execute();
+        conn.close();
+
+        conn.close();
+
+    }
+
+    @Override
     public void saveCriticality(CriticalityVO vo) throws SQLException {
         final Connection conn =  getConnection();
         final String query = "INSERT INTO criticality_factor (microservice, factor, value, vision, dt_transaction) VALUES(?, ?, ?, ?, NOW())";

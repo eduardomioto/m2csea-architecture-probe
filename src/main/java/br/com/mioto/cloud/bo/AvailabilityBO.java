@@ -7,7 +7,7 @@ import java.util.List;
 import org.apache.http.ParseException;
 import org.json.JSONException;
 
-import br.com.mioto.cloud.vo.ConsulHealthcheck;
+import br.com.mioto.cloud.vo.ConsulStatus;
 
 public interface AvailabilityBO {
 
@@ -22,6 +22,6 @@ public interface AvailabilityBO {
      * @throws ParseException the parse exception
      * @throws JSONException the JSON exception
      */
-    public List<ConsulHealthcheck> getAllHealthchecks() throws SQLException, IOException, ParseException, java.text.ParseException, org.json.simple.parser.ParseException, JSONException;
+    public List<ConsulStatus> getAllHealthchecks(String days) throws SQLException, IOException, ParseException, java.text.ParseException, org.json.simple.parser.ParseException, JSONException;
 
 }
