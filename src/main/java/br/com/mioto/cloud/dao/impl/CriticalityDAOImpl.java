@@ -2,6 +2,7 @@ package br.com.mioto.cloud.dao.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.springframework.stereotype.Component;
@@ -45,5 +46,27 @@ public class CriticalityDAOImpl extends BaseDAOImpl implements CriticalityDAO  {
 
         conn.close();
 
+    }
+
+    @Override
+    public boolean hasChangeConfig() throws SQLException {
+        final Connection conn =  getConnection();
+        final String query = "SELECT conf.key, conf.value from config conf";
+
+        final java.sql.Statement stmt = conn.createStatement();
+        final ResultSet rs = stmt.executeQuery(query);
+
+
+        boolean hasChangeConfig = false;
+        while (rs.next()) {
+
+            final String key = rs.getString("key");
+            if(key.equals("hasChange")) {
+                hasChangeConfig = Boolean.valueOf(rs.getString("value"));
+            }
+        }
+
+        conn.close();
+        return hasChangeConfig;
     }
 }

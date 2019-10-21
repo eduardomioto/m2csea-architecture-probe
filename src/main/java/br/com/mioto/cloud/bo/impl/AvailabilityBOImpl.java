@@ -61,21 +61,28 @@ public class AvailabilityBOImpl implements AvailabilityBO {
         final String microserviceListResponseCritical = HttpCommons.callHttp(ConsulIntegration.treatConsulURL("critical"),"GET");
         extracted(microserviceListResponseCritical);
 
-        final List<ConsulStatus> statusList = availabilityDAO.getAvailability(days);
+        final List<ConsulStatus> list = availabilityDAO.getAvailability(days);
 
 
-        for (final ConsulStatus healthcheck : statusList) {
+        for (final ConsulStatus healthcheck : list) {
             log.info(healthcheck.toString());
         }
 
-        Collections.sort(statusList, Collections.reverseOrder());
+        Collections.sort(list, Collections.reverseOrder());
 
-        if(statusList.size() > 0) {
-            final ConsulStatus healthcheck = statusList.get(0);
+        if(criticalityBO.hasChangeConfig()) {
+            if(list.size() > 0) {
+                list.remove(0);
+                Collections.sort(list, Collections.reverseOrder());
+            }
+        }
+
+        if(list.size() > 0) {
+            final ConsulStatus healthcheck = list.get(0);
             checkCriticality(healthcheck);
         }
 
-        return statusList;
+        return list;
     }
 
 

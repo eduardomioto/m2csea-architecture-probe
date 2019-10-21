@@ -45,7 +45,7 @@ public class ResponseTimeBOImpl implements ResponseTimeBO {
     @Override
     public List<ResponseTime> getAllResponseTimes() throws SQLException {
 
-        final List<ResponseTime> responseTimeList = new ArrayList<ResponseTime>();
+        final List<ResponseTime> list = new ArrayList<ResponseTime>();
         final Map<String, Double> responseTimeMap = responseTimeDAO.getAverageTime("1");
         final Map<String, Double> responseTimeMapSevenDays = responseTimeDAO.getAverageTime("7");
         final Map<String, Double> responseTimeMap30Days = responseTimeDAO.getAverageTime("30");
@@ -56,17 +56,24 @@ public class ResponseTimeBOImpl implements ResponseTimeBO {
             responseTime.setAverageLastSevenDays(responseTimeMapSevenDays.get(entry.getKey()));
             responseTime.setAverageLastThirtyDays(responseTimeMap30Days.get(entry.getKey()));
             responseTime.setProject(entry.getKey());
-            responseTimeList.add(responseTime);
+            list.add(responseTime);
         }
 
-        Collections.sort(responseTimeList, Collections.reverseOrder());
+        Collections.sort(list, Collections.reverseOrder());
 
-        if(responseTimeList.size() > 0) {
-            final ResponseTime responseTime = responseTimeList.get(0);
+        if(criticalityBO.hasChangeConfig()) {
+            if(list.size() > 0) {
+                list.remove(0);
+                Collections.sort(list, Collections.reverseOrder());
+            }
+        }
+
+        if(list.size() > 0) {
+            final ResponseTime responseTime = list.get(0);
             checkCriticality(responseTime);
         }
 
-        return responseTimeList;
+        return list;
 
     }
 

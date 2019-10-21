@@ -112,15 +112,23 @@ public class SonarBOImpl implements SonarBO {
             }
         }
 
-        final List<AgregattedSonarIssues> agregattedSonarIssuesList = new ArrayList<AgregattedSonarIssues>(map.values());
-        Collections.sort(agregattedSonarIssuesList, Collections.reverseOrder());
+        final List<AgregattedSonarIssues> list = new ArrayList<AgregattedSonarIssues>(map.values());
 
-        if(agregattedSonarIssuesList.size() > 0) {
-            final AgregattedSonarIssues issue = agregattedSonarIssuesList.get(0);
+        Collections.sort(list, Collections.reverseOrder());
+
+        if(criticalityBO.hasChangeConfig()) {
+            if(list.size() > 0) {
+                list.remove(0);
+                Collections.sort(list, Collections.reverseOrder());
+            }
+        }
+
+        if(list.size() > 0) {
+            final AgregattedSonarIssues issue = list.get(0);
             checkCriticality(issue);
         }
 
-        return agregattedSonarIssuesList;
+        return list;
     }
 
     /**

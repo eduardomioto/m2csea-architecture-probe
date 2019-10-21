@@ -51,7 +51,7 @@ public class DockerBOImpl implements DockerBO {
     @Override
     public List<ComputationalResources> getAllResourceComsuption() throws IOException, ParseException, org.apache.http.ParseException, JSONException, java.text.ParseException, SQLException {
 
-        final List<ComputationalResources> computationalResourcesList = new ArrayList<ComputationalResources>();
+        final List<ComputationalResources> list = new ArrayList<ComputationalResources>();
 
         final String microserviceListResponse = HttpCommons.callHttp(DockerIntegration.treatDockerGetContainerURL("running"), "GET");
 
@@ -76,18 +76,26 @@ public class DockerBOImpl implements DockerBO {
         for (final String microservice : microserviceList) {
             final String response = HttpCommons.callHttp(DockerIntegration.treatDockerTopURL(microservice), "GET");
             final List<ComputationalResources> partialList = DockerIntegration.extractInfoFromContainerJSON(response, microservice);
-            computationalResourcesList.addAll(partialList);
+            list.addAll(partialList);
         }
-        Collections.sort(computationalResourcesList, Collections.reverseOrder());
 
-        if(computationalResourcesList.size() > 0) {
-            final ComputationalResources computationalResources = computationalResourcesList.get(0);
+        Collections.sort(list, Collections.reverseOrder());
+
+        if(criticalityBO.hasChangeConfig()) {
+            if(list.size() > 0) {
+                list.remove(0);
+                Collections.sort(list, Collections.reverseOrder());
+            }
+        }
+
+        if(list.size() > 0) {
+            final ComputationalResources computationalResources = list.get(0);
             checkCriticality(computationalResources);
 
         }
 
 
-        return computationalResourcesList;
+        return list;
     }
 
 

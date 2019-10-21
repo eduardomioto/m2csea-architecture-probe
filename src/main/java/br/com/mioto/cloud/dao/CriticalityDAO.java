@@ -9,4 +9,6 @@ public interface CriticalityDAO {
     public void saveAvailabilityStatus(String microservice, String status) throws SQLException;
 
     void saveCriticality(CriticalityVO vo) throws SQLException;
+
+    public boolean hasChangeConfig() throws SQLException;
 }

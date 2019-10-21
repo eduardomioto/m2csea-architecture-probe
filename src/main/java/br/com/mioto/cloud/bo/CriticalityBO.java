@@ -7,4 +7,6 @@ public interface CriticalityBO {
     void saveCriticality(CriticalityVO vo);
 
     public CriticalityVO populate(String microservice, Integer criticalityFactor, String value, String vision);
+
+    boolean hasChangeConfig();
 }

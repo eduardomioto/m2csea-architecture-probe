@@ -61,4 +61,25 @@ public class CriticalityBOImpl implements CriticalityBO {
 
     }
 
+    /**
+     * Populate.
+     *
+     * @param microservice the microservice
+     * @param criticalityFactor the criticality factor
+     * @param value the value
+     * @param vision the vision
+     * @return the criticality VO
+     */
+    @Override
+    public boolean hasChangeConfig() {
+        boolean hasChangeConfig = false;
+        try {
+            hasChangeConfig = criticalityDAO.hasChangeConfig();
+        } catch (final Exception e) {
+            log.error("Error saving criticality. Error: ", e);
+        }
+        return hasChangeConfig;
+
+    }
+
 }
