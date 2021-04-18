@@ -12,6 +12,3 @@ cd microservice-critical-path/containers/compose
 sudo ./docker-compose.sh
 ```
 
-##### Reference
-- https://docs.docker.com/engine/api/v1.21/
-- 
