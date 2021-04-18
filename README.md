@@ -1,6 +1,6 @@
 M2CSEA - Architecture Probe Module
 --------------
-[![Build Status](https://travis-ci.org/eduardomioto/mc2pd-architecture-probe.svg?branch=master)](https://travis-ci.org/eduardomioto/mc2pd-architecture-probe)
+[![Build Status](https://travis-ci.org/eduardomioto/m2csea-architecture-probe.svg?branch=master)](https://travis-ci.org/eduardomioto/m2csea-architecture-probe)
 
 ##### Introduction
 Technologies Involved 
